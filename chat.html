@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<input id="input" type="text" />
+<button onclick="send()">Send</button>
+<pre id="output"></pre>
+<script>
+	var input = document.getElementById("input");
+	var output = document.getElementById("output");
+	var socket = new WebSocket("ws://"+location.host+"/chat");
+
+	socket.onopen = function () {
+		output.innerHTML += "Status: Connected\n";
+	};
+
+	socket.onmessage = function (e) {
+		var msg = JSON.parse(e.data)
+		output.innerHTML += Date(msg.Time) + " " + msg.Name + " " + msg.Str + "\n";
+	};
+	socket.onclose = function() {
+		output.innerHTML += "Status: Disconnected\n"
+	}
+
+	function send() {
+		var msg = {str:input.value}
+		socket.send(JSON.stringify(msg));
+		input.value = "";
+	}
+</script>
